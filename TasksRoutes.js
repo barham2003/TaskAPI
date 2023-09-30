@@ -7,7 +7,7 @@ const Group = require("./GroupsModel")
 router.get("/", async (req, res) => {
     try {
 
-        const tasks = await Task.find({}).populate("group")
+        const tasks = await Task.find({}).sort({createdAt: -1}).populate("group")
         res.status(200).json(tasks)
     } catch (e) { res.status(400).json({ message: e.message }) }
 })
