@@ -26,7 +26,7 @@ app.use((req, res, next) => {
     next();
 });
 
-mongoose.connect('mongodb://127.0.0.1:27017/tasks')
+mongoose.connect('mongodb+srv://baran:123@cluster0.vzv1quj.mongodb.net/?retryWrites=true&w=majority')
     .then(() => {
         console.log("Connected to MongoDB")
     })
