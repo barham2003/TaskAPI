@@ -30,14 +30,15 @@ router.post("/", async (req, res) => {
     }
 })
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:name", async (req, res) => {
     try {
-        const { id } = req.params
-        if (!mongoose.Types.ObjectId.isValid(id)) { throw Error("NO SUCH GROUP!!") }
-        const group = await Group.findById(id)
+        const { name } = req.params
+        // if (!mongoose.Types.ObjectId.isValid(id)) { throw Error("NO SUCH GROUP!!") }
+        const group = await Group.findOne({name})
+        console.log(group)
         if (group.tasks.length > 0) { throw Error("First Delete Tasks!!!") }
-        await Group.findByIdAndDelete(id)
-        res.status(400).json(group)
+        await Group.findOneAndDelete({name})
+        res.status(200).json(group)
     } catch (e) {
         res.status(400).json({ message: e.message })
     }
