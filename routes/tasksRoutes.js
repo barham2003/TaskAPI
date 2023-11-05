@@ -3,40 +3,47 @@ const router = express.Router()
 const Task = require("../models/tasksModel")
 const mongoose = require("mongoose")
 const Group = require("../models/groupsModel")
+const AppError = require("../utils/AppError")
+const catchAsync = require("../utils/catchAsync")
 
-router.get("/", async (req, res) => {
-    try {
-        const tasks = await Task.find({}).sort({createdAt: -1}).populate("group")
+router.get("/",catchAsync( async (req, res,next) => {
+        const tasks = await Task.find({}).sort({createdAt: -1}).populate({path: "group", select:"name"})
         res.status(200).json(tasks)
-    } catch (e) { res.status(400).json({ message: e.message }) }
-})
+}))
 
-router.post("/", async (req, res) => {
-    try {
-        const newTask = await Task.addTask(req.body)
+const addGroupforTask = async (req,res,next) =>{
+    const theGroup = await Group.findOne({ name: req.body.group })
+    req.body.group = theGroup?._id
+    next()
+}
+
+router.post("/", addGroupforTask ,catchAsync(async (req, res,next) => {
+        const newTask = await Task.create(req.body)
         res.status(200).json(newTask)
-    } catch (e) { res.status(400).json({ message: e.message }) }
-})
+}))
 
-router.delete("/:id", async (req, res) => {
-    try {
+router.get("/:id",catchAsync( async (req, res,next) => {
+    const {id} = req.params
+    const task = await Task.findById(id).populate("group")
+    res.send(task)
+}))
+
+
+router.delete("/:id",catchAsync( async (req, res,next) => {
         const { id } = req.params
-        if (!mongoose.isValidObjectId(id)) { throw Error("NO SUCH TASK!!") }
+        if (!mongoose.isValidObjectId(id)) return next(new AppError("Invalid ID!!",403))
         const task = await Task.findByIdAndDelete(id)
-        if (!task) { throw Error("NO SUCH TASK!!!") }
+        if (!task) return next(new AppError("NO SUCH TASK!!",404))
         res.send("Successfully Deleted!!")
-    } catch (e) { res.status(400).json({ message: e.message }) }
-})
+}))
 
 
-router.patch("/:id/:state", async (req, res) => {
-    try {
+router.patch("/:id/:state",catchAsync( async (req, res,next) => {
         const { id, state } = req.params
         const patchTask = await Task.findByIdAndUpdate(id, { state }, { runValidators: true })
         await patchTask.save()
         res.status(200).json("Succesfully Updated!!")
-    } catch (e) { res.status(400).json({ message: e.message }) }
-})
+}))
 
 
 module.exports = router
