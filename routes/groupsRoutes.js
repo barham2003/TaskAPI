@@ -1,32 +1,52 @@
 const express = require("express")
 const router = express.Router()
-const Group = require("../models/groupsModel")
-const mongoose = require("mongoose")
 const catchAsync = require("../utils/catchAsync")
+const Task = require("../models/tasksModel")
+const taskRoutes = require("../routes/tasksRoutes")
 const AppError = require("../utils/AppError")
 
+
+const ParamstoQuery = (req,res,next) => { 
+    if(req.params?.group) req.query.group = req.params.group 
+    next()
+}
+
 router.get("/",catchAsync (async (req, res,next) => {
-        const groups = await Group.find({}).populate("tasks")
+        const groups = await Task.aggregate([
+            {
+              $group: {
+                _id: "$group",
+                num: {
+                  $sum: 1
+                }
+              }
+            }
+          ])
         res.status(200).json(groups)
 }))
 
 
-router.post("/",catchAsync(async (req, res,next) => {
-        const newGroup = await Group.create(req.body)
-        res.send(newGroup)
+router.route("/:group")
+.delete( catchAsync(async(req,res,next) =>{
+    const {group}= req.params
+    const {deletedCount}=await Task.deleteMany({group})
+    if(deletedCount===0) return next(new AppError("No Such Group like that"))
+    res.status(201).json({
+        state: "Success"
+    }) 
+}))
+.patch(catchAsync(async(req,res,next)=> {
+    const {group} = req.params
+    const {newGroup} = req.body
+    const {modifiedCount} = await Task.updateMany({group},{group:newGroup}, {runValidators:true})
+    if(modifiedCount===0) return next(new AppError("No Such Group like that"))
+    res.status(201).json({
+        message:`${modifiedCount} documents has been changed!`,
+        state: "Success"
+    })
 }))
 
-router.delete("/:name", catchAsync(async (req, res,next) => {
-        const { name } = req.params
-        // const group = await Group.findOne({name})
-        const group =  await Group.findOneAndDelete({name})
 
-        if(!group) {return next (new AppError("Does not exist",402))}
-        // if (group?.tasks.length > 0) { return next(new AppError("Please delete Tasks First!", 406)) }
-
-        res.status(200).json(group)
-}))
-
-
+router.use("/:group/tasks",ParamstoQuery,taskRoutes)
 
 module.exports = router
