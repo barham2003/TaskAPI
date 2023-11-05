@@ -1,7 +1,7 @@
 const express = require("express")
 const app = express()
-const TaskRoutes = require("./routes/tasksRoutes")
-const GroupRoutes = require("./routes/groupRoutes")
+const taskRoutes = require("./routes/tasksRoutes")
+const groupRoutes = require("./routes/groupsRoutes")
 
 
 app.use(express.json())
@@ -12,7 +12,7 @@ app.use((req, res, next) => {
 })
 
 
-app.use("/tasks", TaskRoutes)
-app.use("/groups", GroupRoutes)
+app.use("/tasks", taskRoutes)
+app.use("/groups", groupRoutes)
 
 module.exports = app

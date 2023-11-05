@@ -6,7 +6,6 @@ const Group = require("../models/groupsModel")
 
 router.get("/", async (req, res) => {
     try {
-
         const tasks = await Task.find({}).sort({createdAt: -1}).populate("group")
         res.status(200).json(tasks)
     } catch (e) { res.status(400).json({ message: e.message }) }
@@ -22,8 +21,8 @@ router.post("/", async (req, res) => {
 router.delete("/:id", async (req, res) => {
     try {
         const { id } = req.params
-        if (!mongoose.Types.ObjectId.isValid(id)) { throw Error("NO SUCH TASK!!") }
-        const task = await Task.deleteTask(id)
+        if (!mongoose.isValidObjectId(id)) { throw Error("NO SUCH TASK!!") }
+        const task = await Task.findByIdAndDelete(id)
         if (!task) { throw Error("NO SUCH TASK!!!") }
         res.send("Successfully Deleted!!")
     } catch (e) { res.status(400).json({ message: e.message }) }
