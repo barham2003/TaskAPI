@@ -1,5 +1,5 @@
 const mongoose = require("mongoose")
-const Group = require("./GroupsModel")
+const Group = require("./groupsModel")
 const Schema = mongoose.Schema
 const Model = mongoose.model
 

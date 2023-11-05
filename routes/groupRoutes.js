@@ -1,6 +1,6 @@
 const express = require("express")
 const router = express.Router()
-const Group = require("./GroupsModel")
+const Group = require("../models/groupsModel")
 const mongoose = require("mongoose")
 
 router.get("/", async (req, res) => {
