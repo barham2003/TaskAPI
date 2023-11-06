@@ -2,6 +2,7 @@ const express = require("express")
 const app = express()
 const taskRoutes = require("./routes/tasksRoutes")
 const groupRoutes = require("./routes/groupsRoutes")
+const authRoutes = require("./routes/authRoutes")
 const AppError = require("./utils/AppError")
 const { errorController } = require("./controller/errorController")
 
@@ -16,6 +17,7 @@ app.use((req, res, next) => {
 
 app.use("/tasks", taskRoutes)
 app.use("/groups", groupRoutes)
+app.use("/auth", authRoutes)
 
 app.all("*", (req,res, next) => {
     // res.json({messsage: "ERROR BABA"})
