@@ -14,9 +14,17 @@ module.exports.getGroups = catchAsync (async (req, res,next) => {
               $sum: 1
             }
           }
+        },
+        {
+          $addFields: {
+            name:"$_id"
+          }
+        },
+        {
+          $project: {"_id":0}
         }
       ])
-    res.status(200).json(groups)
+    res.status(200).json({state:"success",data: groups})
 })
 
 
@@ -25,7 +33,7 @@ module.exports.deleteGroup = catchAsync(async(req,res,next) =>{
     const {deletedCount}=await Task.deleteMany({user:req.user._id, group: group})
     if(deletedCount===0) return next(new AppError("No Such Group like that"))
     res.status(201).json({
-        state: "Success"
+      state:"success"
     }) 
 })
 
@@ -37,6 +45,6 @@ module.exports.editGroup = catchAsync(async(req,res,next)=> {
     if(modifiedCount===0) return next(new AppError("No Such Group like that"))
     res.status(201).json({
         message:`${modifiedCount} documents has been changed!`,
-        state: "Success"
+        state:"success"
     })
 })
