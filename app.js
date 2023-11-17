@@ -6,6 +6,7 @@ const authRoutes = require("./routes/authRoutes")
 const AppError = require("./utils/AppError")
 const { errorController } = require("./controller/errorController")
 const path = require("path")
+const cors = require("cors")
 
 app.use((req, res, next) => {
 	res.setHeader("Access-Control-Allow-Origin", "*")
@@ -15,8 +16,8 @@ app.use((req, res, next) => {
 })
 
 // ==== Security Packages ====
-// const helmet = require("helmet")
-// const xss = require("xss-clean")
+const helmet = require("helmet")
+const xss = require("xss-clean")
 const mongoSanatize = require("express-mongo-sanitize")
 // const rateLimit = require("express-rate-limit")
 // Rate Limiting
@@ -29,8 +30,10 @@ const mongoSanatize = require("express-mongo-sanitize")
 // Serving static files
 app.use(express.static(path.join(__dirname, "public")))
 
+app.use(cors())
+
 // Set Security HTTP headers === SECURITY ===
-// app.use(helmet())
+app.use(helmet())
 
 // Limit Requests form Same IP
 // app.use("/", limiter)
@@ -46,7 +49,7 @@ app.use((req, res, next) => {
 app.use(mongoSanatize())
 
 // Data Sanitization against XSS   === SECURITY ===
-// app.use(xss())
+app.use(xss())
 
 app.use("/tasks", taskRoutes)
 app.use("/groups", groupRoutes)
