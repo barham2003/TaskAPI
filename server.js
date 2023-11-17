@@ -8,13 +8,6 @@ process.on("uncaughtException", err => {
 const app = require("./app")
 const DB = process.env.DB_URL
 
-app.use((req, res, next) => {
-	res.setHeader("Access-Control-Allow-Origin", "https://tasks-d5t.pages.dev")
-	res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH")
-	res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization")
-	next()
-})
-
 mongoose.connect(DB).then(() => {
 	console.log("Connected to MongoDB")
 })
