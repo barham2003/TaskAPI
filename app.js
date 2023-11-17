@@ -12,13 +12,13 @@ const cors = require("cors")
 const helmet = require("helmet")
 const xss = require("xss-clean")
 const mongoSanatize = require("express-mongo-sanitize")
-// const rateLimit = require("express-rate-limit")
+const rateLimit = require("express-rate-limit")
 // Rate Limiting
-// const limiter = rateLimit({
-// 	max: 100,
-// 	windowMs: 60 * 60 * 1000,
-// 	message: "Too many requests from this IP please try again in an hour!",
-// })
+const limiter = rateLimit({
+	max: 1000,
+	windowMs: 60 * 60 * 1000,
+	message: "Too many requests from this IP please try again in an hour!",
+})
 
 // Serving static files
 app.use(express.static(path.join(__dirname, "public")))
@@ -29,7 +29,7 @@ app.use(cors())
 app.use(helmet())
 
 // Limit Requests form Same IP
-// app.use("/", limiter)
+app.use("/", limiter)
 
 app.use(express.json({ limit: "10mb" }))
 app.use(express.urlencoded({ extended: true }))
@@ -49,7 +49,6 @@ app.use("/groups", groupRoutes)
 app.use("/auth", authRoutes)
 
 app.all("*", (req, res, next) => {
-	// res.json({messsage: "ERROR BABA"})
 	next(new AppError("Error 404! Not Found", 404))
 })
 
