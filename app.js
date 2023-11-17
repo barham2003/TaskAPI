@@ -8,15 +8,15 @@ const { errorController } = require("./controller/errorController")
 const path = require("path")
 
 app.use((req, res, next) => {
-	res.setHeader("Access-Control-Allow-Origin", "https://tasks-d5t.pages.dev")
+	res.setHeader("Access-Control-Allow-Origin", "*")
 	res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH")
 	res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	next()
 })
 
 // ==== Security Packages ====
-const helmet = require("helmet")
-const xss = require("xss-clean")
+// const helmet = require("helmet")
+// const xss = require("xss-clean")
 const mongoSanatize = require("express-mongo-sanitize")
 // const rateLimit = require("express-rate-limit")
 // Rate Limiting
@@ -30,7 +30,7 @@ const mongoSanatize = require("express-mongo-sanitize")
 app.use(express.static(path.join(__dirname, "public")))
 
 // Set Security HTTP headers === SECURITY ===
-app.use(helmet())
+// app.use(helmet())
 
 // Limit Requests form Same IP
 // app.use("/", limiter)
