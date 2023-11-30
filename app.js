@@ -23,13 +23,14 @@ const limiter = rateLimit({
 // Serving static files
 app.use(express.static(path.join(__dirname, "public")))
 
+// Letting everyone request on our website
 app.use(cors())
 
 // Set Security HTTP headers === SECURITY ===
 app.use(helmet())
 
 // Limit Requests form Same IP
-app.use("/", limiter)
+// app.use("/", limiter)
 
 app.use(express.json({ limit: "10mb" }))
 app.use(express.urlencoded({ extended: true }))
